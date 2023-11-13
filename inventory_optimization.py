@@ -1,51 +1,130 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[3]:
-
-
-import pandas as pd
-import networkx as nx
-from geopy.distance import geodesic
-import matplotlib.pyplot as plt
-
-# Load route data
-route_data = pd.read_csv('route_data.csv')
-
-# Create a graph from the data
-G = nx.Graph()
-
-# Add nodes to the graph
-for index, row in route_data.iterrows():
-    G.add_node(row['location_id'], pos=(row['latitude'], row['longitude']))
-
-# Add edges with distances as attributes
-for i in range(len(route_data)):
-    for j in range(i + 1, len(route_data)):
-        loc1 = route_data.iloc[i]
-        loc2 = route_data.iloc[j]
-        distance = geodesic((loc1['latitude'], loc1['longitude']), (loc2['latitude'], loc2['longitude'])).miles
-        G.add_edge(loc1['location_id'], loc2['location_id'], distance=distance)
-
-# Solve the Travelling Salesman Problem
-tsp_path = nx.approximation.traveling_salesman_problem(G, cycle=True)
-
-# Extract optimized route data
-optimized_route_data = route_data[route_data['location_id'].isin(tsp_path)]
-
-# Display the optimized route
-print("Optimized Route:")
-print(optimized_route_data[['location_id', 'location_name', 'latitude', 'longitude']])
-
-# Plot the optimized route
-pos = nx.get_node_attributes(G, 'pos')
-nx.draw(G, pos, with_labels=True, font_weight='bold', node_size=700, node_color='skyblue', font_color='black', font_size=8)
-plt.title('Optimized Route')
-plt.show()
-
-
-# In[ ]:
-
-
-
-
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "57e3d763-0c29-4ba4-9f43-71959ec41b9f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Iimport necessary libraries\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "477e4bce-133e-4035-99cb-4ed1864d566a",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Load inventory data\n",
+    "inventory_data = pd.read_csv('inventory_data.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "4bf426b5-c975-4b28-b2e4-26f75e2f6cfc",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Inventory Optimization Function\n",
+    "def optimize_inventory(inventory_data):\n",
+    "    # Identify products that need to be reordered\n",
+    "    products_to_reorder = inventory_data[inventory_data['quantity_in_stock'] < inventory_data['reorder_level']]\n",
+    "\n",
+    "    # Initialize the 'quantity_to_order' column\n",
+    "    inventory_data['quantity_to_order'] = 0\n",
+    "\n",
+    "    # Calculate reorder quantities for products to reorder\n",
+    "    inventory_data.loc[products_to_reorder.index, 'quantity_to_order'] = inventory_data['reorder_level'] - inventory_data['quantity_in_stock']\n",
+    "\n",
+    "    return inventory_data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "ab0e5fa6-33ed-4941-aea4-2dfe08e003ff",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Apply inventory optimization\n",
+    "optimized_inventory = optimize_inventory(inventory_data)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "c439ab33-71eb-4075-b75a-8bdc7021ef02",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Optimized Inventory:\n",
+      "   product_id product_name  quantity_in_stock  reorder_level  \\\n",
+      "0           1    Product_A                100             30   \n",
+      "1           2    Product_B                 80             25   \n",
+      "2           3    Product_C                120             40   \n",
+      "3           4    Product_D                 60             20   \n",
+      "4           5    Product_E                 90             35   \n",
+      "5           6    Product_F                110             30   \n",
+      "6           7    Product_G                 75             25   \n",
+      "7           8    Product_H                 95             40   \n",
+      "8           9    Product_I                 70             20   \n",
+      "9          10    Product_J                 85             35   \n",
+      "\n",
+      "   quantity_to_order  \n",
+      "0                  0  \n",
+      "1                  0  \n",
+      "2                  0  \n",
+      "3                  0  \n",
+      "4                  0  \n",
+      "5                  0  \n",
+      "6                  0  \n",
+      "7                  0  \n",
+      "8                  0  \n",
+      "9                  0  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# Display the optimized inventory\n",
+    "print(\"Optimized Inventory:\")\n",
+    "print(optimized_inventory[['product_id', 'product_name', 'quantity_in_stock', 'reorder_level', 'quantity_to_order']])"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
