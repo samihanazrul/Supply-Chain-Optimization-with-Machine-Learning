@@ -1,0 +1,11 @@
+product_id,product_name,quantity_in_stock,reorder_level
+1,Product_A,100,30
+2,Product_B,80,25
+3,Product_C,120,40
+4,Product_D,60,20
+5,Product_E,90,35
+6,Product_F,110,30
+7,Product_G,75,25
+8,Product_H,95,40
+9,Product_I,70,20
+10,Product_J,85,35

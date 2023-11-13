@@ -1,0 +1,11 @@
+location_id,location_name,latitude,longitude
+1,Location_A,40.7128,-74.0060
+2,Location_B,34.0522,-118.2437
+3,Location_C,41.8781,-87.6298
+4,Location_D,37.7749,-122.4194
+5,Location_E,51.5074,-0.1278
+6,Location_F,35.6895,139.6917
+7,Location_G,-33.8688,151.2093
+8,Location_H,55.7558,37.6176
+9,Location_I,-22.9083,-43.1964
+10,Location_J,-33.9258,18.4232
